@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LlamaLegal - Asistente Jurídico</title>
+    <style>
+        :root {
+            --color-bg-light: #f5f0e8;
+            --color-bg-dark: #2a2520;
+            --color-text-light: #2c2418;
+            --color-text-dark: #f5f0e8;
+            --color-accent: #e9d9a8;
+            --color-primary: #8b5a2b;
+            --color-secondary: #5e3b1c;
+            --color-tertiary: #d6c6a5;
+            --shadow-light: 0 8px 30px rgba(0, 0, 0, 0.1);
+            --shadow-dark: 0 8px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--color-bg-light);
+            color: var(--color-text-light);
+            transition: all 0.3s ease;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        body.dark-mode {
+            background-color: var(--color-bg-dark);
+            color: var(--color-text-dark);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: var(--color-primary);
+            color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            position: relative;
+            z-index: 10;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+        }
+
+        .model-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.15);
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            backdrop-filter: blur(5px);
+        }
+
+        .model-tag {
+            font-size: 0.7rem;
+            background-color: var(--color-accent);
+            color: var(--color-secondary);
+            padding: 2px 6px;
+            border-radius: 3px;
+            margin-left: 8px;
+            font-weight: bold;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .user-greeting {
+            font-size: 0.9rem;
+            background-color: rgba(255, 255, 255, 0.15);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            margin-right: 10px;
+        }
+
+        .theme-toggle {
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .model-selector-container {
+            position: relative;
+        }
+
+        .model-selector {
+            padding: 0.5rem 2rem 0.5rem 1rem;
+            border-radius: 4px;
+            border: 1px solid var(--color-tertiary);
+            background-color: rgba(255, 255, 255, 0.9);
+            color: var(--color-text-light);
+            font-weight: 500;
+            appearance: none;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .model-selector-icon {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: var(--color-secondary);
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: rgba(255, 255, 255, 0.15);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #4CAF50; /* connected - green */
+            position: relative;
+        }
+
+        .status-dot::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: 50%;
+            border: 2px solid #4CAF50;
+            opacity: 0.5;
+            animation: pulse 1.5s infinite;
+        }
+
+        .status-dot.offline {
+            background-color: #F44336; /* disconnected - red */
+        }
+
+        .status-dot.offline::after {
+            border-color: #F44336;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.7;
+            }
+            70% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 0;
+            }
+        }
+
+        /* Login Page Styles */
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 80px);
+            padding: 2rem;
+            position: relative;
+            flex: 1;
+        }
+
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(45deg, var(--color-tertiary) 25%, transparent 25%),
+                linear-gradient(-45deg, var(--color-tertiary) 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, var(--color-tertiary) 75%),
+                linear-gradient(-45deg, transparent 75%, var(--color-tertiary) 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+            opacity: 0.05;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .dark-mode .background-pattern {
+            opacity: 0.03;
+        }
+
+        .login-card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow-light);
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .dark-mode .login-card {
+            background-color: #38302a;
+            box-shadow: var(--shadow-dark);
+        }
+
+        .card-decoration {
+            position: absolute;
+            height: 8px;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+        }
+
+        .login-title {
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+            color: var(--color-primary);
+            font-weight: 600;
+        }
+
+        .dark-mode .login-title {
+            color: var(--color-accent);
+        }
+
+        .login-subtitle {
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .dark-mode .login-subtitle {
+            color: #bbb;
+        }
+
+        .user-avatar-container {
+            position: relative;
+            width: 110px;
+            height: 110px;
+            margin: 0 auto 2rem;
+        }
+
+        .user-avatar {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--color-accent);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .avatar-decoration {
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            background-color: var(--color-accent);
+            border-radius: 50%;
+            bottom: 5px;
+            right: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-secondary);
+            font-size: 14px;
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+            position: relative;
+        }
+
+        .input-group label {
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--color-secondary);
+        }
+
+        .dark-mode .input-group label {
+            color: var(--color-tertiary);
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 12px;
+            top: 40px;
+            color: #999;
+        }
+
+        .input-group input {
+            padding: 0.9rem 1rem 0.9rem 2.5rem;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background-color: #f9f9f9;
+        }
+
+        .dark-mode .input-group input {
+            background-color: #2a2520;
+            border-color: #555;
+            color: white;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(139, 90, 43, 0.2);
+        }
+
+        .error-message {
+            color: #F44336;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+            height: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .login-button {
+            background-color: var(--color-primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 1rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-button:hover {
+            background-color: var(--color-secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .login-button:active {
+            transform: translateY(0);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 1.5rem;
+            color: #777;
+            font-size: 0.8rem;
+            background-color: rgba(0, 0, 0, 0.03);
+            margin-top: auto;
+        }
+
+        .dark-mode .footer {
+            background-color: rgba(0, 0, 0, 0.2);
+            color: #999;
+        }
+
+        .legal-badges {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .legal-badge {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.75rem;
+            color: #666;
+            background-color: rgba(0, 0, 0, 0.05);
+            padding: 4px 10px;
+            border-radius: 12px;
+        }
+
+        .dark-mode .legal-badge {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #aaa;
+        }
+
+        /* Chat Page Styles */
+        .chat-container {
+            flex: 1;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+            width: 100%;
+            box-sizing: border-box;
+            overflow-y: auto;
+            padding-bottom: 100px;
+            display: none; /* Hidden by default, shown after login */
+        }
+        
+        .message-wrapper {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
+            max-width: 80%;
+        }
+        
+        .message-sender {
+            font-size: 12px;
+            margin-bottom: 2px;
+            color: #555;
+            padding-left: 12px;
+        }
+        
+        .dark-mode .message-sender {
+            color: #bbb;
+        }
+        
+        .user-wrapper {
+            align-self: flex-end;
+        }
+        
+        .ai-wrapper {
+            align-self: flex-start;
+        }
+        
+        .message {
+            padding: 15px;
+            border-radius: 12px;
+            color: white;
+            position: relative;
+        }
+        
+        .message::before {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            top: 15px;
+        }
+        
+        .user-message {
+            background-color: var(--color-secondary);
+        }
+        
+        .user-message::before {
+            border-width: 8px 8px 0 0;
+            border-color: var(--color-secondary) transparent transparent transparent;
+            right: -8px;
+        }
+        
+        .ai-message {
+            background-color: var(--color-primary);
+        }
+        
+        .ai-message::before {
+            border-width: 8px 0 0 8px;
+            border-color: var(--color-primary) transparent transparent transparent;
+            left: -8px;
+        }
+        
+        .input-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            background-color: var(--color-bg-light);
+            border-top: 1px solid var(--color-tertiary);
+            display: flex;
+            justify-content: center;
+            display: none; /* Hidden by default, shown after login */
+        }
+
+        .dark-mode .input-container {
+            background-color: var(--color-bg-dark);
+            border-top-color: var(--color-secondary);
+        }
+        
+        .input-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 760px;
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 15px 50px 15px 15px;
+            border-radius: 25px;
+            border: none;
+            background: linear-gradient(to bottom, var(--color-primary), var(--color-secondary));
+            color: white;
+            font-size: 16px;
+            outline: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .input-field::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .send-button {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: white;
+            font-size: 20px;
+        }
+        
+        .search-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Icons */
+        .icon-balance {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            position: relative;
+        }
+        
+        .icon-balance:before {
+            content: "";
+            position: absolute;
+            top: 10px;
+            left: 0;
+            width: 20px;
+            height: 2px;
+            background-color: currentColor;
+        }
+        
+        .icon-balance:after {
+            content: "";
+            position: absolute;
+            top: 4px;
+            left: 10px;
+            width: 2px;
+            height: 6px;
+            background-color: currentColor;
+        }
+        
+        .icon-moon {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid currentColor;
+            box-sizing: content-box;
+            transform: rotate(-30deg);
+            position: relative;
+        }
+        
+        .icon-moon:after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 3px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: currentColor;
+        }
+        
+        .icon-sun {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: currentColor;
+            box-sizing: content-box;
+            position: relative;
+        }
+        
+        .icon-sun:after {
+            content: "";
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            border: 2px solid currentColor;
+            border-radius: 50%;
+        }
+        
+        .icon-chevron-down {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-bottom: 2px solid currentColor;
+            border-right: 2px solid currentColor;
+            transform: rotate(45deg);
+        }
+        
+        .icon-user {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid currentColor;
+            position: relative;
+        }
+        
+        .icon-user:after {
+            content: "";
+            position: absolute;
+            top: 14px;
+            left: 2px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: currentColor;
+        }
+        
+        .icon-lock {
+            display: inline-block;
+            width: 10px;
+            height: 8px;
+            border: 2px solid currentColor;
+            border-radius: 3px;
+            position: relative;
+        }
+        
+        .icon-lock:before {
+            content: "";
+            position: absolute;
+            top: -6px;
+            left: 1px;
+            width: 6px;
+            height: 6px;
+            border: 2px solid currentColor;
+            border-bottom: none;
+            border-radius: 6px 6px 0 0;
+        }
+        
+        .icon-shield {
+            display: inline-block;
+            width: 10px;
+            height: 12px;
+            background-color: transparent;
+            border: 2px solid currentColor;
+            border-radius: 50% 50% 0 0;
+        }
+        
+        .icon-check {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid currentColor;
+            border-radius: 50%;
+            position: relative;
+        }
+        
+        .icon-check:before {
+            content: "";
+            position: absolute;
+            top: 3px;
+            left: 2px;
+            width: 5px;
+            height: 2px;
+            border-left: 2px solid currentColor;
+            border-bottom: 2px solid currentColor;
+            transform: rotate(-45deg);
+        }
+        
+        .icon-gavel {
+            display: inline-block;
+            width: 16px;
+            height: 4px;
+            background-color: currentColor;
+            position: relative;
+            transform: rotate(45deg);
+        }
+        
+        .icon-gavel:before {
+            content: "";
+            position: absolute;
+            top: -6px;
+            left: 12px;
+            width: 8px;
+            height: 8px;
+            background-color: currentColor;
+            border-radius: 2px;
+        }
+
+        .icon-error {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid #F44336;
+            position: relative;
+        }
+
+        .icon-error:before,
+        .icon-error:after {
+            content: "";
+            position: absolute;
+            width: 2px;
+            height: 6px;
+            background-color: #F44336;
+            top: 3px;
+            left: 5px;
+        }
+
+        .icon-error:before {
+            transform: rotate(45deg);
+        }
+
+        .icon-error:after {
+            transform: rotate(-45deg);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="brand">
+            <div class="logo">
+                <span class="icon-balance"></span>
+            </div>
+            <div class="model-name">
+                LlamaLegal <span class="model-tag">Llama-3-8B</span>
+            </div>
+        </div>
+        <div class="controls">
+            <div class="user-greeting" id="user-greeting">
+                <!-- Aquí se mostrará el saludo al usuario -->
+            </div>
+            <div class="connection-status">
+                <div class="status-dot"></div>
+                <span>Conectado</span>
+            </div>
+            
+            <div class="model-selector-container">
+                <select class="model-selector" id="model-selector">
+                    <option value="llama3-8b">Llama-3-8B</option>
+                    <option value="llama3-70b">Llama-3-4Q</option>
+                    <option value="llama2-7b">Llama-3-16B</option>
+                </select>
+                <div class="model-selector-icon">
+                    <span class="icon-chevron-down"></span>
+                </div>
+            </div>
+            
+            <button class="theme-toggle" id="theme-toggle">
+                <span class="icon-moon"></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Pantalla de Login -->
+    <div class="main-container" id="login-screen">
+        <div class="background-pattern"></div>
+        <div class="login-card">
+            <div class="card-decoration"></div>
+            <h1 class="login-title">Asistente Jurídico IA</h1>
+            <p class="login-subtitle">Su consultor legal inteligente. Ingrese sus datos para comenzar una consulta.</p>
+            
+            <div class="user-avatar-container">
+                <img src="/api/placeholder/110/110" alt="Avatar de usuario" class="user-avatar">
+                <div class="avatar-decoration">
+                    <span class="icon-user"></span>
+                </div>
+            </div>
+            
+            <form class="login-form" id="login-form">
+                <div class="input-group">
+                    <label for="username">Nombre de usuario</label>
+                    <span class="icon-user input-icon"></span>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        name="username" 
+                        maxlength="25" 
+                        placeholder="Introduzca su nombre"
+                        required
+                    >
+                    <div class="error-message" id="username-error"></div>
+                </div>
+                <button type="submit" class="login-button">
+                    <span class="icon-gavel"></span>
+                    Iniciar consulta jurídica
+                </button>
+            </form>
+
+            <div class="legal-badges">
+                <div class="legal-badge">
+                    <span class="icon-lock"></span>
+                    <span>Confidencial</span>
+                </div>
+                <div class="legal-badge">
+                    <span class="icon-shield"></span>
+                    <span>Seguro</span>
+                </div>
+                <div class="legal-badge">
+                    <span class="icon-check"></span>
+                    <span>Verificado</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pantalla de Chat -->
+    <div class="chat-container" id="chat-screen">
+        <div class="message-wrapper ai-wrapper">
+            <div class="message-sender">Asistente legal ⚖️</div>
+            <div class="message ai-message">
+                Hola, soy tu asistente legal basado en LLaMA 3. ¿En qué puedo ayudarte hoy?
+            </div>
+        </div>
+    </div>
+    
+    <div class="input-container" id="chat-input">
+        <div class="input-wrapper">
+            <form id="question-form" onsubmit="sendMessage(event)">
+                <input type="text" id="user-input" class="input-field" placeholder="Escribe tu consulta jurídica aquí..." required>
+                <button type="submit" class="send-button">
+                    <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <footer class="footer">
+        LlamaLegal © 2025 | Asistente jurídico basado en inteligencia artificial | Todos los derechos reservados
+    </footer>
+
+    <script>
+        // Toggle dark/light mode
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.body;
+        
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            if (body.classList.contains('dark-mode')) {
+                themeToggle.innerHTML = '<span class="icon-sun"></span>';
+            } else {
+                themeToggle.innerHTML = '<span class="icon-moon"></span>';
+            }
+        });
+
+        // Model selector change handler
+        const modelSelector = document.getElementById('model-selector');
+        const modelTag = document.querySelector('.model-tag');
+        
+        modelSelector.addEventListener('change', () => {
+            const selectedModel = modelSelector.options[modelSelector.selectedIndex].text;
+            modelTag.textContent = selectedModel;
+        });
+
+        // Username validation - letters only
+        const usernameInput = document.getElementById('username');
+        const usernameError = document.getElementById('username-error');
+        const loginForm = document.getElementById('login-form');
+        const loginScreen = document.getElementById('login-screen');
+        const chatScreen = document.getElementById('chat-screen');
+        const chatInput = document.getElementById('chat-input');
+        const userGreeting = document.getElementById('user-greeting');
+        
+        usernameInput.addEventListener('input', () => {
+            const value = usernameInput.value;
+            
+            // Check if username contains only letters
+            if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/.test(value)) {
+                usernameError.innerHTML = '<span class="icon-error"></span> Solo se permiten letras del abecedario';
+                usernameInput.setCustomValidity('Solo se permiten letras del abecedario');
+            } else {
+                usernameError.innerHTML = '';
+                usernameInput.setCustomValidity('');
+            }
+        });
+        
+        loginForm.addEventListener('submit', (e) => {
+			e.preventDefault();
+
+			const username = usernameInput.value.trim();
+			if (username) {
+				// Guardar el nombre de usuario
+				sessionStorage.setItem('username', username);
+
+				// Redireccionar a aplicacion.html
+				window.location.href = 'aplicacion.html';
+			}
+		});
+
+
+
+
+        // Function to check if user is already logged in
+        function checkLoggedInUser() {
+            const username = sessionStorage.getItem('username');
+            if (username) {
+                // User is logged in, show chat screen
+                loginScreen.style.display = 'none';
+                chatScreen.style.display = 'block';
+                chatInput.style.display = 'flex';
+                userGreeting.textContent = `Hola, ${username}`;
+            }
+        }
+
+        // Chat messaging function
+        function sendMessage(event) {
+            event.preventDefault();
+            
+            const userInput = document.getElementById('user-input');
+            
+            if (userInput.value.trim() === '') return;
+            
+            // Create user message
+            const userWrapper = document.createElement('div');
+            userWrapper.className = 'message-wrapper user-wrapper';
+            
+            const userSender = document.createElement('div');
+            userSender.className = 'message-sender';
+            userSender.textContent = 'Tú';
+            

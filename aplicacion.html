@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asistente Legal LLaMA 3</title>
+    <style>
+        @font-face {
+            font-family: 'icomoon';
+            src: url('https://cdnjs.cloudflare.com/ajax/libs/icomoon-free-npm/0.0.0/font/icomoon.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+        
+        .icon-sun:before {
+            font-family: 'icomoon';
+            content: "\e9d4";
+        }
+        
+        .icon-moon:before {
+            font-family: 'icomoon';
+            content: "\e9d4";
+        }
+        
+        :root {
+            --primary-color: #8B4513;
+            --secondary-color: #b89070;
+            --background-light: #f0f0f0;
+            --text-light: #333;
+            --background-dark: #222;
+            --text-dark: #eee;
+            --input-gradient-light: linear-gradient(to bottom, #D4AF37, #B8860B);
+            --input-gradient-dark: linear-gradient(to bottom, #555, #333);
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-light);
+            color: var(--text-light);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        body.dark-mode {
+            background-color: var(--background-dark);
+            color: var(--text-dark);
+        }
+        
+        .top-border {
+            background-color: #3e2723;
+            height: 10px;
+            width: 100%;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+        
+        .model-info {
+            font-size: 14px;
+            margin-right: 15px;
+        }
+        
+        .model-tag {
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+        
+        .connection-status {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            margin-left: 15px;
+        }
+        
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        
+        .connected {
+            background-color: #4CAF50;
+        }
+        
+        .disconnected {
+            background-color: #F44336;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+        }
+        
+        .greeting {
+            font-size: 14px;
+            margin-right: 20px;
+        }
+        
+        .theme-toggle {
+            background-color: transparent;
+            border: 1px solid white;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            cursor: pointer;
+            margin-right: 15px;
+            font-size: 16px;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .model-selector {
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            background-color: white;
+            color: #333;
+        }
+        
+        .main-header {
+            text-align: center;
+            padding: 15px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .logo {
+            width: 100px;
+            height: auto;
+            margin-bottom: 5px;
+        }
+        
+        .header-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 0;
+        }
+        
+        .chat-container {
+            flex: 1;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+            width: 100%;
+            box-sizing: border-box;
+            overflow-y: auto;
+            padding-bottom: 100px;
+        }
+        
+        .message-wrapper {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
+            max-width: 80%;
+        }
+        
+        .message-sender {
+            font-size: 12px;
+            margin-bottom: 2px;
+            color: #555;
+            padding-left: 12px;
+        }
+        
+        body.dark-mode .message-sender {
+            color: #aaa;
+        }
+        
+        .user-wrapper {
+            align-self: flex-end;
+        }
+        
+        .ai-wrapper {
+            align-self: flex-start;
+        }
+        
+        .message {
+            padding: 15px;
+            border-radius: 12px;
+            color: white;
+            position: relative;
+        }
+        
+        .message::before {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            top: 15px;
+        }
+        
+        .user-message {
+            background-color: #444;
+        }
+        
+        .user-message::before {
+            border-width: 8px 8px 0 0;
+            border-color: #444 transparent transparent transparent;
+            right: -8px;
+        }
+        
+        .ai-message {
+            background-color: var(--secondary-color);
+        }
+        
+        .ai-message::before {
+            border-width: 8px 0 0 8px;
+            border-color: var(--secondary-color) transparent transparent transparent;
+            left: -8px;
+        }
+        
+        .input-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            background-color: var(--background-light);
+            border-top: 1px solid #ddd;
+            display: flex;
+            justify-content: center;
+            transition: background-color 0.3s;
+        }
+        
+        body.dark-mode .input-container {
+            background-color: var(--background-dark);
+            border-top: 1px solid #444;
+        }
+        
+        .input-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 760px;
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 15px 50px 15px 15px;
+            border-radius: 25px;
+            border: none;
+            background: var(--input-gradient-light);
+            color: white;
+            font-size: 16px;
+            outline: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: background 0.3s;
+        }
+        
+        body.dark-mode .input-field {
+            background: var(--input-gradient-dark);
+        }
+        
+        .input-field::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .send-button {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: white;
+            font-size: 20px;
+        }
+        
+        .search-icon {
+            width: 20px;
+            height: 20px;
+        }
+    </style>
+</head>
+<body id="chat-screen">
+    <div class="top-border"></div>
+    
+    <div class="header">
+        <div class="header-left">
+            <div class="model-tag" id="model-tag">LLaMA 3</div>
+            <div class="connection-status">
+                <div class="status-indicator connected"></div>
+                <span>Conectado</span>
+            </div>
+        </div>
+        
+        <div class="header-right">
+            <div class="greeting" id="user-greeting">Hola, usuario</div>
+            <button class="theme-toggle" id="theme-toggle"><span class="icon-moon"></span></button>
+            <select class="model-selector" id="model-selector">
+                <option value="llama3">LLaMA 3</option>
+                <option value="claude3">Claude 3</option>
+                <option value="gpt4">GPT-4</option>
+                <option value="mistral">Mistral AI</option>
+            </select>
+        </div>
+    </div>
+    
+    <div class="main-header">
+        <img src="/api/placeholder/100/100" alt="Logo Mazo de Juez" class="logo">
+        <h1 class="header-title">Asistente legal ⚖️</h1>
+    </div>
+    
+    <div class="chat-container" id="chat-container">
+        <div class="message-wrapper ai-wrapper">
+            <div class="message-sender">Asistente legal ⚖️</div>
+            <div class="message ai-message">
+                Hola, soy tu asistente legal basado en LLaMA 3. ¿En qué puedo ayudarte hoy?
+            </div>
+        </div>
+    </div>
+    
+    <div class="input-container" id="chat-input">
+        <div class="input-wrapper">
+            <form id="question-form" onsubmit="sendMessage(event)">
+                <input type="text" id="user-input" class="input-field" placeholder="Escribe tu mensaje aquí..." required>
+                <button type="submit" class="send-button">
+                    <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Recuperar datos de sessionStorage
+        document.addEventListener('DOMContentLoaded', function() {
+            // Recuperar el nombre de usuario
+            const username = sessionStorage.getItem('username') || 'usuario';
+            document.getElementById('user-greeting').textContent = `Hola, ${username}`;
+            
+            // Recuperar el modelo seleccionado si existe
+            const storedModel = sessionStorage.getItem('model');
+            if (storedModel) {
+                document.getElementById('model-tag').textContent = storedModel;
+                // Buscar y seleccionar la opción correspondiente en el selector
+                const modelSelector = document.getElementById('model-selector');
+                for (let i = 0; i < modelSelector.options.length; i++) {
+                    if (modelSelector.options[i].text === storedModel) {
+                        modelSelector.selectedIndex = i;
+                        break;
+                    }
+                }
+            }
+            
+            // Recuperar el tema si existe
+            const storedTheme = sessionStorage.getItem('theme');
+            if (storedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                document.getElementById('theme-toggle').innerHTML = '<span class="icon-sun"></span>';
+            }
+        });
+        
+        // Función para alternar el tema
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.body;
+        
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            if (body.classList.contains('dark-mode')) {
+                themeToggle.innerHTML = '<span class="icon-sun"></span>';
+                sessionStorage.setItem('theme', 'dark');
+            } else {
+                themeToggle.innerHTML = '<span class="icon-moon"></span>';
+                sessionStorage.setItem('theme', 'light');
+            }
+        });
+        
+        // Función para cambiar el modelo
+        const modelSelector = document.getElementById('model-selector');
+        const modelTag = document.getElementById('model-tag');
+        
+        modelSelector.addEventListener('change', () => {
+            const selectedModel = modelSelector.options[modelSelector.selectedIndex].text;
+            modelTag.textContent = selectedModel;
+            
+            // Guardar modelo en sessionStorage
+            sessionStorage.setItem('model', selectedModel);
+            
+            // Simulación de conexión/desconexión
+            const statusIndicator = document.querySelector('.status-indicator');
+            const statusText = document.querySelector('.connection-status span');
+            
+            // Simular proceso de conexión
+            statusIndicator.classList.remove('connected');
+            statusIndicator.classList.add('disconnected');
+            statusText.textContent = 'Conectando...';
+            
+            setTimeout(() => {
+                statusIndicator.classList.remove('disconnected');
+                statusIndicator.classList.add('connected');
+                statusText.textContent = 'Conectado';
+                
+                // Actualizar el mensaje de bienvenida
+                const aiMessage = document.querySelector('.ai-message');
+                aiMessage.textContent = `Hola, soy tu asistente legal basado en ${selectedModel}. ¿En qué puedo ayudarte hoy?`;
+            }, 1500);
+        });
+        
+        // Función para enviar mensajes
+        function sendMessage(event) {
+            event.preventDefault();
+            
+            const userInput = document.getElementById('user-input');
+            const chatContainer = document.getElementById('chat-container');
+            
+            if (userInput.value.trim() === '') return;
+            
+            // Crear mensaje del usuario
+            const userWrapper = document.createElement('div');
+            userWrapper.className = 'message-wrapper user-wrapper';
+            
+            const userSender = document.createElement('div');
+            userSender.className = 'message-sender';
+            userSender.textContent = 'Tú';
+            
+            const userMessage = document.createElement('div');
+            userMessage.className = 'message user-message';
+            userMessage.textContent = userInput.value;
+            
+            userWrapper.appendChild(userSender);
+            userWrapper.appendChild(userMessage);
+            chatContainer.appendChild(userWrapper);
+            
+            // Obtener modelo actual
+            const selectedModel = document.getElementById('model-tag').textContent;
+            
+            // Simular respuesta de la IA
+            setTimeout(() => {
+                const aiWrapper = document.createElement('div');
+                aiWrapper.className = 'message-wrapper ai-wrapper';
+                
+                const aiSender = document.createElement('div');
+                aiSender.className = 'message-sender';
+                aiSender.textContent = 'Asistente legal ⚖️';
+                
+                const aiMessage = document.createElement('div');
+                aiMessage.className = 'message ai-message';
+                aiMessage.textContent = `[${selectedModel}] Esta es una respuesta simulada a: "${userInput.value}"`;
+                
+                aiWrapper.appendChild(aiSender);
+                aiWrapper.appendChild(aiMessage);
+                chatContainer.appendChild(aiWrapper);
+                
+                // Scroll hasta el último mensaje
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }, 1000);
+            
+            // Limpiar el input y hacer scroll
+            userInput.value = '';
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+    </script>
+</body>
+</html>
