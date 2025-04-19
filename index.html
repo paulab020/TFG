@@ -930,18 +930,30 @@
             }
         });
         
-        loginForm.addEventListener('submit', (e) => {
-			e.preventDefault();
 
-			const username = usernameInput.value.trim();
-			if (username) {
-				// Guardar el nombre de usuario
-				sessionStorage.setItem('username', username);
-
-				// Redireccionar a aplicacion.html
-				window.location.href = 'aplicacion.html';
-			}
-		});
+	loginForm.addEventListener('submit', function(e) {
+	    e.preventDefault();
+	    console.log("Formulario enviado"); 
+	
+	    const username = usernameInput.value.trim();
+	    if (username) {
+	        // Guardar el nombre de usuario
+	        sessionStorage.setItem('username', username);
+	
+	        try {
+	            
+	            window.location.replace('./aplicacion.html');
+	            
+	            // Como respaldo, si lo anterior no funciona después de un breve retraso
+	            setTimeout(function() {
+	                window.location.href = 'aplicacion.html';
+	            }, 100);
+	        } catch (error) {
+	            console.error("Error en la redirección:", error);
+	            alert("Ha ocurrido un error al redirigir. Por favor, intente de nuevo.");
+	        }
+	    }
+});
 
 
 
