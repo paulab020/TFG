@@ -387,10 +387,10 @@
         });
         
         // Función para cambiar el modelo
-        const modelSelector = document.getElementById('model-selector');
-        const modelTag = document.getElementById('model-tag');
+        /*const modelSelector = document.getElementById('model-selector');
+        const modelTag = document.getElementById('model-tag');*/
         
-        modelSelector.addEventListener('change', () => {
+        /*modelSelector.addEventListener('change', () => {
             const selectedModel = modelSelector.options[modelSelector.selectedIndex].text;
             modelTag.textContent = selectedModel;
             
@@ -415,7 +415,7 @@
                 const aiMessage = document.querySelector('.ai-message');
                 aiMessage.textContent = `Hola, soy tu asistente legal basado en ${selectedModel}. ¿En qué puedo ayudarte hoy?`;
             }, 1500);
-        });
+        });*/
         
         // Función para enviar mensajes
         function sendMessage(event) {
@@ -443,7 +443,7 @@
             chatContainer.appendChild(userWrapper);
             
             // Obtener modelo actual
-            const selectedModel = document.getElementById('model-tag').textContent;
+            //const selectedModel = document.getElementById('model-tag').textContent;
             
             // Simular respuesta de la IA
             setTimeout(() => {
