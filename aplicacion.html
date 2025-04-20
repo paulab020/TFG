@@ -5,23 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Asistente Legal LLaMA 3</title>
     <style>
-        @font-face {
-            font-family: 'icomoon';
-            src: url('https://cdnjs.cloudflare.com/ajax/libs/icomoon-free-npm/0.0.0/font/icomoon.woff') format('woff');
-            font-weight: normal;
-            font-style: normal;
-        }
-        
-        .icon-sun:before {
-            font-family: 'icomoon';
-            content: "\e9d4";
-        }
-        
-        .icon-moon:before {
-            font-family: 'icomoon';
-            content: "\e9d4";
-        }
-        
         :root {
             --primary-color: #8B4513;
             --secondary-color: #b89070;
@@ -31,6 +14,8 @@
             --text-dark: #eee;
             --input-gradient-light: linear-gradient(to bottom, #D4AF37, #B8860B);
             --input-gradient-dark: linear-gradient(to bottom, #555, #333);
+            --input-container-light: #e0e0e0;
+            --input-container-dark: #1a1a1a;
         }
         
         body {
@@ -130,14 +115,6 @@
             justify-content: center;
         }
         
-        .model-selector {
-            padding: 5px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            background-color: white;
-            color: #333;
-        }
-        
         .main-header {
             text-align: center;
             padding: 15px 0;
@@ -168,6 +145,9 @@
             box-sizing: border-box;
             overflow-y: auto;
             padding-bottom: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         
         .message-wrapper {
@@ -175,6 +155,7 @@
             flex-direction: column;
             margin-bottom: 20px;
             max-width: 80%;
+            width: 100%;
         }
         
         .message-sender {
@@ -238,7 +219,7 @@
             left: 0;
             right: 0;
             padding: 20px;
-            background-color: var(--background-light);
+            background-color: var(--input-container-light);
             border-top: 1px solid #ddd;
             display: flex;
             justify-content: center;
@@ -246,7 +227,7 @@
         }
         
         body.dark-mode .input-container {
-            background-color: var(--background-dark);
+            background-color: var(--input-container-dark);
             border-top: 1px solid #444;
         }
         
@@ -309,8 +290,12 @@
         
         <div class="header-right">
             <div class="greeting" id="user-greeting">Hola, usuario</div>
-            <button class="theme-toggle" id="theme-toggle"><span class="icon-moon"></span></button>
-           
+            <button class="theme-toggle" id="theme-toggle">
+                <!-- Icono local de luna/sol -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </button>
         </div>
     </div>
     
@@ -349,25 +334,24 @@
             const username = sessionStorage.getItem('username') || 'usuario';
             document.getElementById('user-greeting').textContent = `Hola, ${username}`;
             
-            // Recuperar el modelo seleccionado si existe
-            /*const storedModel = sessionStorage.getItem('model');
-            if (storedModel) {
-                document.getElementById('model-tag').textContent = storedModel;
-                // Buscar y seleccionar la opción correspondiente en el selector
-                const modelSelector = document.getElementById('model-selector');
-                for (let i = 0; i < modelSelector.options.length; i++) {
-                    if (modelSelector.options[i].text === storedModel) {
-                        modelSelector.selectedIndex = i;
-                        break;
-                    }
-                }
-            }*/
-            
             // Recuperar el tema si existe
             const storedTheme = sessionStorage.getItem('theme');
             if (storedTheme === 'dark') {
                 document.body.classList.add('dark-mode');
-                document.getElementById('theme-toggle').innerHTML = '<span class="icon-sun"></span>';
+                // Cambiar icono del tema
+                document.getElementById('theme-toggle').innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                `;
             }
         });
         
@@ -378,44 +362,31 @@
         themeToggle.addEventListener('click', () => {
             body.classList.toggle('dark-mode');
             if (body.classList.contains('dark-mode')) {
-                themeToggle.innerHTML = '<span class="icon-sun"></span>';
+                // Cambiar al icono del sol para modo oscuro
+                themeToggle.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                `;
                 sessionStorage.setItem('theme', 'dark');
             } else {
-                themeToggle.innerHTML = '<span class="icon-moon"></span>';
+                // Cambiar al icono de la luna para modo claro
+                themeToggle.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                `;
                 sessionStorage.setItem('theme', 'light');
             }
         });
-        
-        // Función para cambiar el modelo
-        /*const modelSelector = document.getElementById('model-selector');
-        const modelTag = document.getElementById('model-tag');*/
-        
-        /*modelSelector.addEventListener('change', () => {
-            const selectedModel = modelSelector.options[modelSelector.selectedIndex].text;
-            modelTag.textContent = selectedModel;
-            
-            // Guardar modelo en sessionStorage
-            sessionStorage.setItem('model', selectedModel);
-            
-            // Simulación de conexión/desconexión
-            const statusIndicator = document.querySelector('.status-indicator');
-            const statusText = document.querySelector('.connection-status span');
-            
-            // Simular proceso de conexión
-            statusIndicator.classList.remove('connected');
-            statusIndicator.classList.add('disconnected');
-            statusText.textContent = 'Conectando...';
-            
-            setTimeout(() => {
-                statusIndicator.classList.remove('disconnected');
-                statusIndicator.classList.add('connected');
-                statusText.textContent = 'Conectado';
-                
-                // Actualizar el mensaje de bienvenida
-                const aiMessage = document.querySelector('.ai-message');
-                aiMessage.textContent = `Hola, soy tu asistente legal basado en ${selectedModel}. ¿En qué puedo ayudarte hoy?`;
-            }, 1500);
-        });*/
         
         // Función para enviar mensajes
         function sendMessage(event) {
@@ -442,9 +413,6 @@
             userWrapper.appendChild(userMessage);
             chatContainer.appendChild(userWrapper);
             
-            // Obtener modelo actual
-            //const selectedModel = document.getElementById('model-tag').textContent;
-            
             // Simular respuesta de la IA
             setTimeout(() => {
                 const aiWrapper = document.createElement('div');
@@ -456,7 +424,7 @@
                 
                 const aiMessage = document.createElement('div');
                 aiMessage.className = 'message ai-message';
-                aiMessage.textContent = `[${selectedModel}] Esta es una respuesta simulada a: "${userInput.value}"`;
+                aiMessage.textContent = `Esta es una respuesta simulada a: "${userInput.value}"`;
                 
                 aiWrapper.appendChild(aiSender);
                 aiWrapper.appendChild(aiMessage);

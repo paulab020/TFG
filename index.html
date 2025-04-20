@@ -436,212 +436,19 @@
             background-color: rgba(255, 255, 255, 0.1);
             color: #aaa;
         }
-
-        /* Icons */
-        .icon-balance {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            position: relative;
-        }
-        
-        .icon-balance:before {
-            content: "";
-            position: absolute;
-            top: 10px;
-            left: 0;
-            width: 20px;
-            height: 2px;
-            background-color: currentColor;
-        }
-        
-        .icon-balance:after {
-            content: "";
-            position: absolute;
-            top: 4px;
-            left: 10px;
-            width: 2px;
-            height: 6px;
-            background-color: currentColor;
-        }
-        
-        .icon-moon {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            border: 2px solid currentColor;
-            box-sizing: content-box;
-            transform: rotate(-30deg);
-            position: relative;
-        }
-        
-        .icon-moon:after {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 3px;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background-color: currentColor;
-        }
-        
-        .icon-sun {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background-color: currentColor;
-            box-sizing: content-box;
-            position: relative;
-        }
-        
-        .icon-sun:after {
-            content: "";
-            position: absolute;
-            top: -4px;
-            left: -4px;
-            right: -4px;
-            bottom: -4px;
-            border: 2px solid currentColor;
-            border-radius: 50%;
-        }
-        
-        .icon-chevron-down {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-bottom: 2px solid currentColor;
-            border-right: 2px solid currentColor;
-            transform: rotate(45deg);
-        }
-        
-        .icon-user {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            border: 2px solid currentColor;
-            position: relative;
-        }
-        
-        .icon-user:after {
-            content: "";
-            position: absolute;
-            top: 14px;
-            left: 2px;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background-color: currentColor;
-        }
-        
-        .icon-lock {
-            display: inline-block;
-            width: 10px;
-            height: 8px;
-            border: 2px solid currentColor;
-            border-radius: 3px;
-            position: relative;
-        }
-        
-        .icon-lock:before {
-            content: "";
-            position: absolute;
-            top: -6px;
-            left: 1px;
-            width: 6px;
-            height: 6px;
-            border: 2px solid currentColor;
-            border-bottom: none;
-            border-radius: 6px 6px 0 0;
-        }
-        
-        .icon-shield {
-            display: inline-block;
-            width: 10px;
-            height: 12px;
-            background-color: transparent;
-            border: 2px solid currentColor;
-            border-radius: 50% 50% 0 0;
-        }
-        
-        .icon-check {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border: 2px solid currentColor;
-            border-radius: 50%;
-            position: relative;
-        }
-        
-        .icon-check:before {
-            content: "";
-            position: absolute;
-            top: 3px;
-            left: 2px;
-            width: 5px;
-            height: 2px;
-            border-left: 2px solid currentColor;
-            border-bottom: 2px solid currentColor;
-            transform: rotate(-45deg);
-        }
-        
-        .icon-gavel {
-            display: inline-block;
-            width: 16px;
-            height: 4px;
-            background-color: currentColor;
-            position: relative;
-            transform: rotate(45deg);
-        }
-        
-        .icon-gavel:before {
-            content: "";
-            position: absolute;
-            top: -6px;
-            left: 12px;
-            width: 8px;
-            height: 8px;
-            background-color: currentColor;
-            border-radius: 2px;
-        }
-
-        .icon-error {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            border: 2px solid #F44336;
-            position: relative;
-        }
-
-        .icon-error:before,
-        .icon-error:after {
-            content: "";
-            position: absolute;
-            width: 2px;
-            height: 6px;
-            background-color: #F44336;
-            top: 3px;
-            left: 5px;
-        }
-
-        .icon-error:before {
-            transform: rotate(45deg);
-        }
-
-        .icon-error:after {
-            transform: rotate(-45deg);
-        }
     </style>
 </head>
 <body>
     <header class="header">
         <div class="brand">
             <div class="logo">
-                <span class="icon-balance"></span>
+                <!-- Icono de balanza usando SVG -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 3L3 10h18L12 3z"/>
+                    <path d="M12 21V10"/>
+                    <path d="M7 15l-3 6h6l-3-6z"/>
+                    <path d="M17 15l-3 6h6l-3-6z"/>
+                </svg>
             </div>
             <div class="model-name">
                 LlamaLegal <span class="model-tag">Llama-3-8B</span>
@@ -656,10 +463,11 @@
                 <span>Conectado</span>
             </div>
             
-           
-            
             <button class="theme-toggle" id="theme-toggle">
-                <span class="icon-moon"></span>
+                <!-- Icono de luna usando SVG -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
             </button>
         </div>
     </header>
@@ -675,14 +483,22 @@
             <div class="user-avatar-container">
                 <img src="https://github.com/paulab020/TFG/blob/main/usuario.jpg?raw=true" alt="Avatar de usuario" class="user-avatar">
                 <div class="avatar-decoration">
-                    <span class="icon-user"></span>
+                    <!-- Icono de usuario usando SVG -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
                 </div>
             </div>
             
             <form class="login-form" id="login-form">
                 <div class="input-group">
                     <label for="username">Nombre de usuario</label>
-                    <span class="icon-user input-icon"></span>
+                    <!-- Icono de usuario usando SVG -->
+                    <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
                     <input 
                         type="text" 
                         id="username" 
@@ -694,22 +510,41 @@
                     <div class="error-message" id="username-error"></div>
                 </div>
                 <button type="submit" class="login-button">
-                    <span class="icon-gavel"></span>
+                    <!-- Icono de mazo usando SVG -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 14v6"></path>
+                        <path d="M10 12l4 2"></path>
+                        <path d="M16 5l-4 2"></path>
+                        <path d="M9 10h0"></path>
+                        <path d="M17 7L4 20"></path>
+                        <path d="M20 4L8 16"></path>
+                    </svg>
                     Iniciar consulta jurídica
                 </button>
             </form>
 
             <div class="legal-badges">
                 <div class="legal-badge">
-                    <span class="icon-lock"></span>
+                    <!-- Icono de candado usando SVG -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
                     <span>Confidencial</span>
                 </div>
                 <div class="legal-badge">
-                    <span class="icon-shield"></span>
+                    <!-- Icono de escudo usando SVG -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    </svg>
                     <span>Seguro</span>
                 </div>
                 <div class="legal-badge">
-                    <span class="icon-check"></span>
+                    <!-- Icono de verificación usando SVG -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="m9 12 2 2 4-4"></path>
+                    </svg>
                     <span>Verificado</span>
                 </div>
             </div>
@@ -728,20 +563,29 @@
         themeToggle.addEventListener('click', () => {
             body.classList.toggle('dark-mode');
             if (body.classList.contains('dark-mode')) {
-                themeToggle.innerHTML = '<span class="icon-sun"></span>';
+                // Cambiar al icono del sol para modo oscuro
+                themeToggle.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                `;
             } else {
-                themeToggle.innerHTML = '<span class="icon-moon"></span>';
+                // Cambiar al icono de la luna para modo claro
+                themeToggle.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                `;
             }
         });
-
-        // Model selector change handler
-       // const modelSelector = document.getElementById('model-selector');
-       // const modelTag = document.querySelector('.model-tag');
-        
-        /*modelSelector.addEventListener('change', () => {
-            const selectedModel = modelSelector.options[modelSelector.selectedIndex].text;
-            modelTag.textContent = selectedModel;
-        });*/
 
         // Username validation - letters only
         const usernameInput = document.getElementById('username');
@@ -753,7 +597,14 @@
             
             // Check if username contains only letters
             if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/.test(value)) {
-                usernameError.innerHTML = '<span class="icon-error"></span> Solo se permiten letras del abecedario';
+                usernameError.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F44336" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="15" y1="9" x2="9" y2="15"></line>
+                        <line x1="9" y1="9" x2="15" y2="15"></line>
+                    </svg> 
+                    Solo se permiten letras del abecedario
+                `;
                 usernameInput.setCustomValidity('Solo se permiten letras del abecedario');
             } else {
                 usernameError.innerHTML = '';
