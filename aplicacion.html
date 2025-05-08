@@ -289,6 +289,9 @@
         </div>
         
         <div class="header-right">
+            <button id="reset-memory" class="theme-toggle">
+                🧹 Borrar Memoria
+            </button>
             <div class="greeting" id="user-greeting">Hola, usuario</div>
             <button class="theme-toggle" id="theme-toggle">
                 <!-- Icono local de luna/sol -->
@@ -333,6 +336,27 @@
             // Recuperar el nombre de usuario
             const username = sessionStorage.getItem('username') || 'usuario';
             document.getElementById('user-greeting').textContent = `Hola, ${username}`;
+            
+            // Logica del boton borrar memoria
+            document.getElementById("reset-memory").addEventListener("click", async () => {
+            if (!confirm("¿Seguro que quieres borrar tu memoria conversacional?")) return;
+        
+            try {
+                const response = await fetch("https://b271-138-100-68-196.ngrok-free.app/reset", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ usuario: username })
+                });
+        
+                const data = await response.json();
+                alert(data.mensaje || "Memoria reiniciada.");
+            } catch (error) {
+                console.error("Error al reiniciar memoria:", error);
+                alert("Hubo un error al intentar reiniciar la memoria.");
+            }
+            });
             
             // Recuperar el tema si existe
             const storedTheme = sessionStorage.getItem('theme');
@@ -434,7 +458,7 @@
             userInput.value = '';
             
             try {
-                const response = await fetch("https://5ee6-138-100-68-196.ngrok-free.app/chat", {
+                const response = await fetch("https://b271-138-100-68-196.ngrok-free.app/chat", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
