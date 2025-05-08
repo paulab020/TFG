@@ -16,6 +16,8 @@
             --input-gradient-dark: linear-gradient(to bottom, #555, #333);
             --input-container-light: #e0e0e0;
             --input-container-dark: #1a1a1a;
+            --memory-button-bg: #8B4513;
+            --memory-button-hover: #704010;
         }
         
         body {
@@ -97,6 +99,30 @@
         .greeting {
             font-size: 14px;
             margin-right: 20px;
+        }
+        
+        .reset-memory-btn {
+            background-color: var(--memory-button-bg);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 15px;
+            box-shadow: 0 3px 5px rgba(0,0,0,0.3);
+            transition: background-color 0.3s, transform 0.2s;
+            display: flex;
+            align-items: center;
+        }
+        
+        .reset-memory-btn:hover {
+            background-color: var(--memory-button-hover);
+            transform: translateY(-2px);
+        }
+        
+        .reset-memory-btn:active {
+            transform: translateY(0);
         }
         
         .theme-toggle {
@@ -289,7 +315,7 @@
         </div>
         
         <div class="header-right">
-            <button id="reset-memory" class="theme-toggle">
+            <button id="reset-memory" class="reset-memory-btn">
                 🧹 Borrar Memoria
             </button>
             <div class="greeting" id="user-greeting">Hola, usuario</div>
