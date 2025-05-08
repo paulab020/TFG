@@ -332,9 +332,10 @@
 
     <script>
         // Recuperar datos de sessionStorage
+        const username = sessionStorage.getItem('username') || 'usuario';
+        
         document.addEventListener('DOMContentLoaded', function() {
             // Recuperar el nombre de usuario
-            const username = sessionStorage.getItem('username') || 'usuario';
             document.getElementById('user-greeting').textContent = `Hola, ${username}`;
             
             // Logica del boton borrar memoria
