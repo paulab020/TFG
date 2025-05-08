@@ -16,8 +16,9 @@
             --input-gradient-dark: linear-gradient(to bottom, #555, #333);
             --input-container-light: #e0e0e0;
             --input-container-dark: #1a1a1a;
-            --memory-button-bg: #8B4513;
-            --memory-button-hover: #704010;
+            --memory-button-bg: #c9a98f;
+            --memory-button-hover: #b88d70;
+            --theme-toggle-hover: rgba(255, 255, 255, 0.3);
         }
         
         body {
@@ -139,6 +140,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: background-color 0.3s;
+        }
+        
+        .theme-toggle:hover {
+            background-color: var(--theme-toggle-hover);
         }
         
         .main-header {
